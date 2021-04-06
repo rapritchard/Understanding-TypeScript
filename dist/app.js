@@ -1,16 +1,90 @@
 "use strict";
-let appId = 'abc';
-const button = document.querySelector('button');
-function add(n1, n2) {
-    if (n1 + n2 > 0) {
-        return n1 + n2;
+class Department {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+        this.employees = [];
     }
-    return;
+    static createEmployee(name) {
+        return {
+            name: name,
+        };
+    }
+    addEmployee(employee) {
+        this.employees.push(employee);
+    }
+    printEmployeeInformation() {
+        console.log(this.employees.length);
+        console.log(this.employees);
+    }
 }
-function clickHandler(message) {
-    console.log('Clicked! ' + message);
+Department.fiscalYear = 2021;
+class ITDepartment extends Department {
+    constructor(id, admins) {
+        super(id, "IT");
+        this.admins = admins;
+    }
+    describe() {
+        console.log("IT Department - ID: " + this.id);
+    }
 }
-if (button) {
-    button.addEventListener('click', clickHandler.bind(null, "You're welcome!"));
+class AccountingDepartment extends Department {
+    constructor(id, reports) {
+        super(id, "Accounting");
+        this.reports = reports;
+        this.lastReport = reports[0];
+    }
+    static getInstance() {
+        if (AccountingDepartment.instance) {
+            return this.instance;
+        }
+        this.instance = new AccountingDepartment("d2", []);
+        return this.instance;
+    }
+    get mostRecentReport() {
+        if (this.lastReport) {
+            return this.lastReport;
+        }
+        throw new Error("No report found.");
+    }
+    set mostRecentReport(value) {
+        if (!value) {
+            throw new Error("Please pass in a valid value!");
+        }
+        this.addReport(value);
+    }
+    describe() {
+        console.log("Account Department - ID: " + this.id);
+    }
+    addEmployee(name) {
+        if (name === "Max") {
+            return;
+        }
+        this.employees.push(name);
+    }
+    addReport(text) {
+        this.reports.push(text);
+        this.lastReport = text;
+    }
+    printReports() {
+        console.log(this.reports);
+    }
 }
+const employee1 = Department.createEmployee("Max");
+console.log(employee1, Department.fiscalYear);
+const it = new ITDepartment("d1", ["Max"]);
+it.addEmployee("Max");
+it.addEmployee("Manu");
+it.describe();
+it.printEmployeeInformation();
+console.log(it);
+const accounting = AccountingDepartment.getInstance();
+const accounting2 = AccountingDepartment.getInstance();
+console.log(accounting, accounting2);
+accounting.mostRecentReport = "Year End Report";
+accounting.addReport("Something went wrong...");
+console.log(accounting.mostRecentReport);
+accounting.addEmployee("Max");
+accounting.addEmployee("Manu");
+accounting.describe();
 //# sourceMappingURL=app.js.map
